@@ -2,28 +2,27 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.next.storm.integration</groupId>
-	<artifactId>storm-test</artifactId>
+	<groupId>com.next.storm</groupId>
+	<artifactId>storm-topology</artifactId>
 	<version>0.0.1</version>
 	<packaging>jar</packaging>
 
-	<name>storm-test</name>
+	<name>storm-topology</name>
 	<url>http://maven.apache.org</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jdk.version>1.8</jdk.version>
-		
+
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
+			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
-
 		<!-- http://mvnrepository.com/artifact/org.apache.storm/storm-core -->
 		<dependency>
 			<groupId>org.apache.storm</groupId>
@@ -42,7 +41,16 @@
 			<artifactId>flux-core</artifactId>
 			<version>0.10.1</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.7</version>
+		</dependency>
+		<dependency>
+			<groupId>com.next.storm.integration</groupId>
+			<artifactId>storm-test</artifactId>
+			<version>0.0.1</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
