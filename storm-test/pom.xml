@@ -57,4 +57,12 @@
 			</plugin>
 		</plugins>
 	</build>
+	<distributionManagement>
+		<repository>
+			<id>internal.repo</id>
+			<name>My Repository</name>
+			<url>https://mymavenrepo.com/repo/O2r5sTKqQK59iOXNk1dH/</url>
+		</repository>
+	</distributionManagement>
+	
 </project>

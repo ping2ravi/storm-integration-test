@@ -6,4 +6,4 @@ services:
   - docker
 
 script:
-- ./build.sh
+- ./build.sh "clean install deploy"
