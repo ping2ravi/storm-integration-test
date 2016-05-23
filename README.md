@@ -106,12 +106,12 @@ Now Lets create a [TesStormTopology](https://github.com/ping2ravi/storm-integrat
 	//After every test kill this topology
 		testStormTopology.killTopology(localCluster);
 	}
-	```
+```
 	
 	
 	Now Lets create our tests
 	
-	```java
+```java
   @Test
 	public void test_WhenTwoValidPositiveIntegerValuesAreSentToBolt() throws Exception{
 	      //sendMessageToStreamOfBolt is sync method, which means it will wait untill message has been processed by topology and will return after message is processed or given timeout has reached.
@@ -154,6 +154,6 @@ Now Lets create a [TesStormTopology](https://github.com/ping2ravi/storm-integrat
         List<Values> output = testStormTopology.getMessageReceivedOnStream("add-bolt --> print-bolt");
         Assert.assertEquals(0, output.size());
 	}
-	```
+```
 	
 	Thats it. :)
