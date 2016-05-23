@@ -57,7 +57,7 @@ streams:
 
 ```
 
-Its a very simple topology where spout send two values in atuple, Add Bolt add them and send result to Print Bolt, which just prints it. In this example we are plannign to test AddBolt, so implementaion of Spout and Print Bolt doesnt matter, only thing matters is that AddBolt is listening to streams from Spout and writing to Stream which is listened by Print Bolt. Basically Add Bolt has input and output stream
+Its a very simple topology where spout send two values in a tuple, Add Bolt add them and send result to Print Bolt, which just prints it. In this example we are plannign to test AddBolt, so implementaion of Spout and Print Bolt doesnt matter, only thing matters is that AddBolt is listening to streams from Spout and writing to Stream which is listened by Print Bolt. Basically Add Bolt has input and output stream
 
 ### Test Strategy
 
