@@ -1,0 +1,7 @@
+rootProject.name = 'storm-integration'
+
+include ':storm-test'
+include ':storm-topology'
+
+project(':storm-test').projectDir = "$rootDir/storm-test" as File
+project(':storm-topology').projectDir = "$rootDir/storm-topology" as File
