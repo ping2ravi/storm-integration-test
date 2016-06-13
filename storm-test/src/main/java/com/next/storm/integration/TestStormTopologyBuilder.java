@@ -1,12 +1,13 @@
 package com.next.storm.integration;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import backtype.storm.LocalCluster;
+import backtype.storm.generated.StormTopology;
+import backtype.storm.topology.BoltDeclarer;
+import backtype.storm.topology.IComponent;
+import backtype.storm.topology.IRichBolt;
+import backtype.storm.topology.IRichSpout;
+import backtype.storm.topology.TopologyBuilder;
+import backtype.storm.tuple.Values;
 
 import org.apache.storm.flux.model.BeanDef;
 import org.apache.storm.flux.model.BoltDef;
@@ -20,19 +21,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-
 import com.next.storm.integration.bolt.TestTargetBolt;
 import com.next.storm.integration.queue.MessageQueue;
 import com.next.storm.integration.spout.TestSourceSpout;
 
-import backtype.storm.LocalCluster;
-import backtype.storm.generated.StormTopology;
-import backtype.storm.topology.BoltDeclarer;
-import backtype.storm.topology.IComponent;
-import backtype.storm.topology.IRichBolt;
-import backtype.storm.topology.IRichSpout;
-import backtype.storm.topology.TopologyBuilder;
-import backtype.storm.tuple.Values;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class TestStormTopologyBuilder {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -76,6 +75,7 @@ public class TestStormTopologyBuilder {
             builder.setSpout(spoutName, oneIRichSpout, 1);
             boltDeclarer.shuffleGrouping(spoutName);
             logger.info("Spout Created : {}, for input stream {} ",spoutName, oneIRichSpout.getStreamName());
+            count++;
         }
         count = 0;
         String newBoltName;
@@ -84,6 +84,7 @@ public class TestStormTopologyBuilder {
         	boltDeclarer = builder.setBolt(newBoltName, oneIRichBolt, 1);
             boltDeclarer.shuffleGrouping(boltName);
             logger.info("Bolt Created : {}, for output stream {} ",newBoltName, oneIRichBolt.getStreamName());
+            count++;
         }
 
         StormTopology stormTopology = builder.createTopology();
