@@ -73,7 +73,14 @@ public class TestStormTopologyBuilder {
         for(TestSourceSpout oneIRichSpout : spoutStreams.values()){
             spoutName = "SPOUT-"+count;
             builder.setSpout(spoutName, oneIRichSpout, 1);
-            boltDeclarer.shuffleGrouping(spoutName);
+            if(oneIRichSpout.getStreamId() == null){
+            	logger.info("No Stream Id defined so using default");
+            	boltDeclarer.shuffleGrouping(spoutName);	
+            }else{
+            	logger.info("Stream Id defined so using {}", oneIRichSpout.getStreamId());
+            	boltDeclarer.shuffleGrouping(spoutName, oneIRichSpout.getStreamId());
+            }
+            
             logger.info("Spout Created : {}, for input stream {} ",spoutName, oneIRichSpout.getStreamName());
             count++;
         }
@@ -103,7 +110,7 @@ public class TestStormTopologyBuilder {
                 }
                 MessageQueue.getInstance().createMessageStream(oneStreamDef.getName());
                 IComponent sourceCompanent = buildComponent(topologyDef, oneStreamDef.getFrom());
-                TestSourceSpout spout = new TestSourceSpout(sourceCompanent, oneStreamDef.getName());
+                TestSourceSpout spout = new TestSourceSpout(sourceCompanent, oneStreamDef.getName(), oneStreamDef.getGrouping().getStreamId());
                 spoutStreams.put(oneStreamDef.getName(), spout);
             }
         }

@@ -1,11 +1,8 @@
 package com.next.storm.topology.bolt;
 
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.hamcrest.Matcher;
-import org.hamcrest.MatcherAssert;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -38,13 +35,18 @@ public class TestAddBolt {
 	}
 	@Before
 	public void startTopology() throws Exception{
-        logger.info("Starting Topology");
-		TestStormTopologyBuilder testStormTopologyBuilder = new TestStormTopologyBuilder();
-        testStormTopology = testStormTopologyBuilder.buildTopology("test-topology.yaml", "add-bolt");
+		try{
+			logger.info("Starting Topology");
+			TestStormTopologyBuilder testStormTopologyBuilder = new TestStormTopologyBuilder();
+	        testStormTopology = testStormTopologyBuilder.buildTopology("test-topology.yaml", "add-bolt");
 
-        boolean topologyStatus = testStormTopology.startTopology(localCluster, 10, TimeUnit.SECONDS);
-        Assert.assertTrue(topologyStatus);
-        logger.info("Topology Started");
+	        boolean topologyStatus = testStormTopology.startTopology(localCluster, 10, TimeUnit.SECONDS);
+	        Assert.assertTrue(topologyStatus);
+	        logger.info("Topology Started");
+		}catch(Exception ex){
+			ex.printStackTrace();
+		}
+        
 	}
 	@After
 	public void stopTopology() throws Exception{
@@ -82,6 +84,21 @@ public class TestAddBolt {
         Assert.assertEquals(-94, output.get(2).get(0));
         Assert.assertEquals(26, output.get(3).get(0));
         Assert.assertEquals(11, output.get(4).get(0));
+
+	}
+	
+	@Test
+	public void test_WhenMessageSentToAllInputStreamOfbolt() throws Exception{
+        testStormTopology.sendMessageToStreamOfBolt("spout-1 --> bolt-1", "Test01", new Values(5, 11), 5L, TimeUnit.SECONDS);
+        testStormTopology.sendMessageToStreamOfBolt("source-spout-two --> bolt-1", "Test02", new Values(-5, 11), 5L, TimeUnit.SECONDS);
+        testStormTopology.sendMessageToStreamOfBolt("source-spout-three --> bolt-1", "Test03", new Values(-105, 11), 5L, TimeUnit.SECONDS);
+
+
+        List<Values> output = testStormTopology.getMessageReceivedOnStream("add-bolt --> print-bolt");
+        Assert.assertEquals(3, output.size());
+        Assert.assertEquals(16, output.get(0).get(0));
+        Assert.assertEquals(6, output.get(1).get(0));
+        Assert.assertEquals(-94, output.get(2).get(0));
 
 	}
 	@Test

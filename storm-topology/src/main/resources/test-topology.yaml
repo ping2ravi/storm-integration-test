@@ -7,6 +7,33 @@ spouts:
   - id: "source-spout"
     className: "com.next.storm.topolgy.spout.SourceSpout"
     parallelism: 1
+    properties:
+      - name: "outputFieldOne"
+        value: "value1"
+      - name: "outputFieldTwo"
+        value: "value2"
+      - name: "addStream"
+        value: "StreamOne"
+  - id: "source-spout-two"
+    className: "com.next.storm.topolgy.spout.SourceSpout"
+    parallelism: 1
+    properties:
+      - name: "outputFieldOne"
+        value: "value1"
+      - name: "outputFieldTwo"
+        value: "value2"
+      - name: "addStream"
+        value: "StreamTwo"
+  - id: "source-spout-three"
+    className: "com.next.storm.topolgy.spout.SourceSpout"
+    parallelism: 1
+    properties:
+      - name: "outputFieldOne"
+        value: "value1"
+      - name: "outputFieldTwo"
+        value: "value2"
+      - name: "addStream"
+        value: "StreamThree" 
 
 # bolt definitions
 bolts:
@@ -24,6 +51,19 @@ streams:
     to: "add-bolt"
     grouping:
       type: SHUFFLE
+      streamId: "StreamOne"
+  - name: "source-spout-two --> bolt-1" # name isn't used (placeholder for logging, UI, etc.)
+    from: "source-spout-two"
+    to: "add-bolt"
+    grouping:
+      type: SHUFFLE
+      streamId: "StreamTwo"
+  - name: "source-spout-three --> bolt-1" # name isn't used (placeholder for logging, UI, etc.)
+    from: "source-spout-three"
+    to: "add-bolt"
+    grouping:
+      type: SHUFFLE
+      streamId: "StreamThree"    
   - name: "add-bolt --> print-bolt" # name isn't used (placeholder for logging, UI, etc.)
     from: "add-bolt"
     to: "print-bolt"

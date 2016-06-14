@@ -9,10 +9,8 @@ import com.next.storm.integration.queue.MessageQueue;
 import backtype.storm.spout.SpoutOutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.IComponent;
-import backtype.storm.topology.IRichBolt;
 import backtype.storm.topology.IRichSpout;
 import backtype.storm.topology.OutputFieldsDeclarer;
-import backtype.storm.tuple.Values;
 
 public class TestSourceSpout implements IRichSpout{
 
@@ -22,11 +20,13 @@ public class TestSourceSpout implements IRichSpout{
     private IComponent sourceComponent;
     private MessageQueue messageQueue;
     private String streamName;
+    private String streamId;
 
-    public TestSourceSpout(IComponent sourceComponent, String streamName){
+    public TestSourceSpout(IComponent sourceComponent, String streamName, String streamId){
         this.sourceComponent = sourceComponent;
         this.streamName = streamName;
         this.messageQueue = MessageQueue.getInstance();
+        this.streamId = streamId;
     }
 
 	public void open(Map conf, TopologyContext context, SpoutOutputCollector collector) {
@@ -60,7 +60,14 @@ public class TestSourceSpout implements IRichSpout{
             return;
         }
         System.out.println("**** NEXT TUPLE "+values);
-        collector.emit(values.getMessage(), values.getMessageId());
+        if(streamId == null){
+        	System.out.println("Publishing Message to Default Stream : " + values.getMessage() +" with MessageId : "+values.getMessageId());
+        	collector.emit(values.getMessage(), values.getMessageId());	
+        }else{
+        	System.out.println("Publishing Message to Stream : "+streamId+" with values : " + values.getMessage() +" with MessageId : "+values.getMessageId());
+        	collector.emit(streamId, values.getMessage(), values.getMessageId());
+        }
+        
     }
 
 	public void ack(Object msgId) {
@@ -85,6 +92,10 @@ public class TestSourceSpout implements IRichSpout{
 
 	public String getStreamName() {
 		return streamName;
+	}
+
+	public String getStreamId() {
+		return streamId;
 	}
 
 }
