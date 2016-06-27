@@ -89,7 +89,7 @@ public class TestStormTopologyBuilder {
         for(TestTargetBolt oneIRichBolt : boltOutputStreams.values()){
         	newBoltName = "BOLT-"+count;
         	boltDeclarer = builder.setBolt(newBoltName, oneIRichBolt, 1);
-            boltDeclarer.shuffleGrouping(boltName);
+            boltDeclarer.shuffleGrouping(boltName, oneIRichBolt.getStreamId());
             logger.info("Bolt Created : {}, for output stream {} ",newBoltName, oneIRichBolt.getStreamName());
             count++;
         }
@@ -110,7 +110,11 @@ public class TestStormTopologyBuilder {
                 }
                 MessageQueue.getInstance().createMessageStream(oneStreamDef.getName());
                 IComponent sourceCompanent = buildComponent(topologyDef, oneStreamDef.getFrom());
-                TestSourceSpout spout = new TestSourceSpout(sourceCompanent, oneStreamDef.getName(), oneStreamDef.getGrouping().getStreamId());
+                String streamId = oneStreamDef.getGrouping().getStreamId();
+                if(streamId == null || streamId.trim().equals("")){
+        			streamId = "default";	
+        		}
+                TestSourceSpout spout = new TestSourceSpout(sourceCompanent, oneStreamDef.getName(), streamId);
                 spoutStreams.put(oneStreamDef.getName(), spout);
             }
         }
@@ -127,7 +131,11 @@ public class TestStormTopologyBuilder {
                     System.err.println("Only SHuffle Grouping is supported for now. Keep an eye for update or feel free to send pull request");
                 }
                 MessageQueue.getInstance().createMessageStream(oneStreamDef.getName());
-                TestTargetBolt spout = new TestTargetBolt(oneStreamDef.getName());
+                String streamId = oneStreamDef.getGrouping().getStreamId();
+                if(streamId == null || streamId.trim().equals("")){
+        			streamId = "default";	
+        		}
+                TestTargetBolt spout = new TestTargetBolt(oneStreamDef.getName(), streamId);
                 boltOutputStreams.put(oneStreamDef.getName(), spout);
             }
         }

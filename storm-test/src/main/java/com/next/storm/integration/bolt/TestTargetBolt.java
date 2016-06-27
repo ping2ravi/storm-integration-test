@@ -20,11 +20,13 @@ public class TestTargetBolt implements IRichBolt{
 
 	private static final long serialVersionUID = 1L;
 	private String streamName;
+	private String streamId;
 	private OutputCollector collector;
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	
-	public TestTargetBolt(String streamName){
+	public TestTargetBolt(String streamName, String streamId){
 		this.streamName = streamName;
+		this.streamId = streamId;
 	}
 
 	public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
@@ -61,6 +63,10 @@ public class TestTargetBolt implements IRichBolt{
 
 	public String getStreamName() {
 		return streamName;
+	}
+
+	public String getStreamId() {
+		return streamId;
 	}
 
 }

@@ -1,0 +1,87 @@
+name: "test-topology"
+config:
+  topology.workers: 1
+
+# spout definitions
+spouts:
+  - id: "source-spout"
+    className: "com.next.storm.topolgy.spout.SourceSpout"
+    parallelism: 1
+    properties:
+      - name: "outputFieldOne"
+        value: "value1"
+      - name: "outputFieldTwo"
+        value: "value2"
+      - name: "addStream"
+        value: "StreamOne"
+  - id: "source-spout-two"
+    className: "com.next.storm.topolgy.spout.SourceSpout"
+    parallelism: 1
+    properties:
+      - name: "outputFieldOne"
+        value: "value1"
+      - name: "outputFieldTwo"
+        value: "value2"
+      - name: "addStream"
+        value: "StreamTwo"
+  - id: "source-spout-three"
+    className: "com.next.storm.topolgy.spout.SourceSpout"
+    parallelism: 1
+    properties:
+      - name: "outputFieldOne"
+        value: "value1"
+      - name: "outputFieldTwo"
+        value: "value2"
+      - name: "addStream"
+        value: "StreamThree" 
+
+# bolt definitions
+bolts:
+  - id: "add-bolt"
+    className: "com.next.storm.topolgy.bolt.AddBoltWithTwoOutputStream"
+    parallelism: 1
+    properties:
+      - name: "positiveNumberStream"
+        value: "positiveNumberStream"
+      - name: "negativeNumberStream"
+        value: "negativeNumberStream"
+  - id: "print-bolt"
+    className: "com.next.storm.topolgy.bolt.PrintBolt"
+    parallelism: 1
+  - id: "print-negative-number-bolt"
+    className: "com.next.storm.topolgy.bolt.PrintBolt"
+    parallelism: 1  
+
+#stream definitions
+streams:
+  - name: "spout-1 --> bolt-1" # name isn't used (placeholder for logging, UI, etc.)
+    from: "source-spout"
+    to: "add-bolt"
+    grouping:
+      type: SHUFFLE
+      streamId: "StreamOne"
+  - name: "source-spout-two --> bolt-1" # name isn't used (placeholder for logging, UI, etc.)
+    from: "source-spout-two"
+    to: "add-bolt"
+    grouping:
+      type: SHUFFLE
+      streamId: "StreamTwo"
+  - name: "source-spout-three --> bolt-1" # name isn't used (placeholder for logging, UI, etc.)
+    from: "source-spout-three"
+    to: "add-bolt"
+    grouping:
+      type: SHUFFLE
+      streamId: "StreamThree"    
+  - name: "add-bolt --> print-bolt" # name isn't used (placeholder for logging, UI, etc.)
+    from: "add-bolt"
+    to: "print-bolt"
+    grouping:
+      type: SHUFFLE  
+      streamId: "positiveNumberStream"
+      
+  - name: "add-bolt --> print-negative-number-bolt" # name isn't used (placeholder for logging, UI, etc.)
+    from: "add-bolt"
+    to: "print-negative-number-bolt"
+    grouping:
+      type: SHUFFLE   
+      streamId: "negativeNumberStream"    
