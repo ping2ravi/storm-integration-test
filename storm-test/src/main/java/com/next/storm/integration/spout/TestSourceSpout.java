@@ -5,14 +5,13 @@ import java.util.Map;
 import com.next.storm.integration.StormNotifier;
 import com.next.storm.integration.queue.Message;
 import com.next.storm.integration.queue.MessageQueue;
+import org.apache.storm.spout.SpoutOutputCollector;
+import org.apache.storm.task.TopologyContext;
+import org.apache.storm.topology.IComponent;
+import org.apache.storm.topology.IRichSpout;
+import org.apache.storm.topology.OutputFieldsDeclarer;
 
-import backtype.storm.spout.SpoutOutputCollector;
-import backtype.storm.task.TopologyContext;
-import backtype.storm.topology.IComponent;
-import backtype.storm.topology.IRichSpout;
-import backtype.storm.topology.OutputFieldsDeclarer;
-
-public class TestSourceSpout implements IRichSpout{
+public class TestSourceSpout implements IRichSpout {
 
 	private static final long serialVersionUID = 1L;
     private SpoutOutputCollector collector;

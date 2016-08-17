@@ -3,6 +3,8 @@ package com.next.storm.topology.bolt;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.storm.LocalCluster;
+import org.apache.storm.tuple.Values;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -15,8 +17,6 @@ import org.slf4j.LoggerFactory;
 import com.next.storm.integration.TestStormTopology;
 import com.next.storm.integration.TestStormTopologyBuilder;
 
-import backtype.storm.LocalCluster;
-import backtype.storm.tuple.Values;
 
 public class TestAddBolt {
 	private static Logger logger = LoggerFactory.getLogger(TestAddBolt.class);

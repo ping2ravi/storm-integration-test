@@ -1,13 +1,9 @@
 package com.next.storm.integration;
 
-import backtype.storm.LocalCluster;
-import backtype.storm.generated.StormTopology;
-import backtype.storm.topology.BoltDeclarer;
-import backtype.storm.topology.IComponent;
-import backtype.storm.topology.IRichBolt;
-import backtype.storm.topology.IRichSpout;
-import backtype.storm.topology.TopologyBuilder;
-import backtype.storm.tuple.Values;
+import org.apache.storm.LocalCluster;
+import org.apache.storm.generated.StormTopology;
+import org.apache.storm.topology.*;
+import org.apache.storm.tuple.Values;
 
 import org.apache.storm.flux.model.BeanDef;
 import org.apache.storm.flux.model.BoltDef;

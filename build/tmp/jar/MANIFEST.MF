@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-Implementation-Title: storm-integration
-Implementation-Version: 0.1.0-SNAPSHOT
-Main-Class: 
-Class-Path: 
-

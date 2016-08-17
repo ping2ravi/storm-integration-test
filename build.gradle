@@ -1,6 +1,8 @@
 group = 'com.next.storm'
+version = '1.0.2'
 apply plugin: 'java'
 apply plugin: 'test'
+
 
 buildscript {
   repositories {
@@ -24,9 +26,9 @@ subprojects {
     group = 'com.next.storm'
 
   dependencies {
-      compile 'org.apache.storm:storm-core:0.10.1'
+      compile 'org.apache.storm:storm-core:1.0.2'
       compile 'org.springframework:spring-core:4.2.6.RELEASE'
-      compile 'org.apache.storm:flux-core:0.10.1'
+      compile 'org.apache.storm:flux-core:1.0.2'
 
       testCompile 'junit:junit:4.12'
       testCompile 'org.slf4j:slf4j-api:1.7.7'

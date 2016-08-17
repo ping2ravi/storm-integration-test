@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.storm.LocalCluster;
+import org.apache.storm.generated.KillOptions;
+import org.apache.storm.generated.StormTopology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -15,10 +18,8 @@ import com.next.storm.integration.queue.Message;
 import com.next.storm.integration.queue.MessageQueue;
 import com.next.storm.integration.spout.TestSourceSpout;
 
-import backtype.storm.LocalCluster;
-import backtype.storm.generated.KillOptions;
-import backtype.storm.generated.StormTopology;
-import backtype.storm.tuple.Values;
+
+import org.apache.storm.tuple.Values;
 
 public class TestStormTopologyImpl implements TestStormTopology {
 	private Logger logger =  LoggerFactory.getLogger(this.getClass());

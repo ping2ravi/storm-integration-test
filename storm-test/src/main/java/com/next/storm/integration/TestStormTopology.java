@@ -1,10 +1,11 @@
 package com.next.storm.integration;
 
+import org.apache.storm.LocalCluster;
+import org.apache.storm.tuple.Values;
+
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import backtype.storm.LocalCluster;
-import backtype.storm.tuple.Values;
 
 public interface TestStormTopology {
 

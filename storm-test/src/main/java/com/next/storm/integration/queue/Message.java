@@ -1,8 +1,9 @@
 package com.next.storm.integration.queue;
 
+import org.apache.storm.tuple.Values;
+
 import java.io.Serializable;
 
-import backtype.storm.tuple.Values;
 
 public class Message implements Serializable{
 
