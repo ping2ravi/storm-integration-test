@@ -40,7 +40,7 @@ public class TestAddBolt {
 			TestStormTopologyBuilder testStormTopologyBuilder = new TestStormTopologyBuilder();
 	        testStormTopology = testStormTopologyBuilder.buildTopology("test-topology.yaml", "add-bolt");
 
-	        boolean topologyStatus = testStormTopology.startTopology(localCluster, 10, TimeUnit.SECONDS);
+	        boolean topologyStatus = testStormTopology.startTopology(localCluster, 20, TimeUnit.SECONDS);
 	        Assert.assertTrue(topologyStatus);
 	        logger.info("Topology Started");
 		}catch(Exception ex){

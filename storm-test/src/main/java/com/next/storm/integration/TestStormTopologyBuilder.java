@@ -1,5 +1,6 @@
 package com.next.storm.integration;
 
+import com.next.storm.integration.spout.TestProxySpout;
 import org.apache.storm.LocalCluster;
 import org.apache.storm.generated.StormTopology;
 import org.apache.storm.topology.*;
@@ -54,13 +55,41 @@ public class TestStormTopologyBuilder {
         System.out.println("Cluster shut down successfully " + new Date());
 	}
 
-	public TestStormTopology buildTopology(String fluxTopologyFileName, final String boltName) throws Exception {
+	public TestStormTopology buildTopology(String fluxTopologyFileName, final String componentName) throws Exception {
 		Resource resource = new ClassPathResource(fluxTopologyFileName);
 		TopologyDef topologyDef = FluxParser.parseFile(resource.getFile().getAbsolutePath(), false, false, null, false);
-		IRichBolt boltBeingTested = buildBolt(topologyDef, boltName);
+        if(isBolt(topologyDef, componentName)){
+            return buildBoltTopology(topologyDef, componentName);
+        }
+        return buildSpoutTopology(topologyDef, componentName);
+	}
+    private TestStormTopology buildSpoutTopology(TopologyDef topologyDef, String spoutName) throws Exception {
+        IRichSpout spoutBeingTested = buildSpoutForTesting(topologyDef, spoutName);
+        Map<String, TestTargetBolt> boltOutputStreams = buildOutputStreams(topologyDef, spoutName);
 
-		Map<String, TestSourceSpout> spoutStreams = buildInputStreams(topologyDef, boltName, boltBeingTested);
-		Map<String, TestTargetBolt> boltOutputStreams = buildOutputStreams(topologyDef, boltName, boltBeingTested);
+
+        TopologyBuilder builder = new TopologyBuilder();
+        SpoutDeclarer spoutDeclarer =  builder.setSpout(spoutName, spoutBeingTested, 1);
+        int count = 0;
+        String newBoltName;
+        BoltDeclarer boltDeclarer;
+        for(TestTargetBolt oneIRichBolt : boltOutputStreams.values()){
+            newBoltName = "BOLT-"+count;
+            boltDeclarer = builder.setBolt(newBoltName, oneIRichBolt, 1);
+            boltDeclarer.shuffleGrouping(spoutName, oneIRichBolt.getStreamId());
+            logger.info("Bolt Created : {}, for output stream {} ",newBoltName, oneIRichBolt.getStreamName());
+            count++;
+        }
+
+        StormTopology stormTopology = builder.createTopology();
+        TestStormTopologyImpl testStormTopology = new TestStormTopologyImpl(stormTopology, new HashMap<>(), boltOutputStreams);
+        return testStormTopology;
+    }
+    private TestStormTopology buildBoltTopology(TopologyDef topologyDef, String boltName) throws Exception {
+        IRichBolt boltBeingTested = buildBolt(topologyDef, boltName);
+
+        Map<String, TestSourceSpout> spoutStreams = buildInputStreams(topologyDef, boltName, boltBeingTested);
+        Map<String, TestTargetBolt> boltOutputStreams = buildOutputStreams(topologyDef, boltName);
 
         TopologyBuilder builder = new TopologyBuilder();
         BoltDeclarer boltDeclarer =  builder.setBolt(boltName, boltBeingTested, 1);
@@ -70,21 +99,21 @@ public class TestStormTopologyBuilder {
             spoutName = "SPOUT-"+count;
             builder.setSpout(spoutName, oneIRichSpout, 1);
             if(oneIRichSpout.getStreamId() == null){
-            	logger.info("No Stream Id defined so using default");
-            	boltDeclarer.shuffleGrouping(spoutName);	
+                logger.info("No Stream Id defined so using default");
+                boltDeclarer.shuffleGrouping(spoutName);
             }else{
-            	logger.info("Stream Id defined so using {}", oneIRichSpout.getStreamId());
-            	boltDeclarer.shuffleGrouping(spoutName, oneIRichSpout.getStreamId());
+                logger.info("Stream Id defined so using {}", oneIRichSpout.getStreamId());
+                boltDeclarer.shuffleGrouping(spoutName, oneIRichSpout.getStreamId());
             }
-            
+
             logger.info("Spout Created : {}, for input stream {} ",spoutName, oneIRichSpout.getStreamName());
             count++;
         }
         count = 0;
         String newBoltName;
         for(TestTargetBolt oneIRichBolt : boltOutputStreams.values()){
-        	newBoltName = "BOLT-"+count;
-        	boltDeclarer = builder.setBolt(newBoltName, oneIRichBolt, 1);
+            newBoltName = "BOLT-"+count;
+            boltDeclarer = builder.setBolt(newBoltName, oneIRichBolt, 1);
             boltDeclarer.shuffleGrouping(boltName, oneIRichBolt.getStreamId());
             logger.info("Bolt Created : {}, for output stream {} ",newBoltName, oneIRichBolt.getStreamName());
             count++;
@@ -93,7 +122,17 @@ public class TestStormTopologyBuilder {
         StormTopology stormTopology = builder.createTopology();
         TestStormTopologyImpl testStormTopology = new TestStormTopologyImpl(stormTopology, spoutStreams, boltOutputStreams);
         return testStormTopology;
-	}
+    }
+    private boolean isBolt(TopologyDef topologyDef, String componentName) throws Exception {
+        if(topologyDef.getBoltDef(componentName) != null){
+            return true;
+        }
+        if(topologyDef.getSpoutDef(componentName) != null){
+            return false;
+        }
+        throw new Exception("Neither a bolt or Spout defined with name " + componentName);
+    }
+
     private Map<String, TestSourceSpout> buildInputStreams(TopologyDef topologyDef, String boltName, IRichBolt boltBeingTestes) throws Exception {
         List<StreamDef> streams = topologyDef.getStreams();
         Map<String, TestSourceSpout> spoutStreams = new HashMap<>();
@@ -117,7 +156,7 @@ public class TestStormTopologyBuilder {
         logger.info("Total Spouts Created= {}",spoutStreams.size());
         return spoutStreams;
     }
-    private Map<String, TestTargetBolt> buildOutputStreams(TopologyDef topologyDef, String boltName, IRichBolt boltBeingTestes) throws Exception {
+    private Map<String, TestTargetBolt> buildOutputStreams(TopologyDef topologyDef, String boltName) throws Exception {
         List<StreamDef> streams = topologyDef.getStreams();
         Map<String, TestTargetBolt> boltOutputStreams = new HashMap<>();
 
@@ -179,6 +218,10 @@ public class TestStormTopologyBuilder {
 
 		return (IRichSpout) buildObject(topologyDef, className, spoutDef.getProperties());
 	}
+    private IRichSpout buildSpoutForTesting(TopologyDef topologyDef, String spoutName) throws Exception {
+        IRichSpout spoutBeingTested = buildSpout(topologyDef, spoutName);
+        return new TestProxySpout(spoutBeingTested);
+    }
 
 	private Object buildRef(TopologyDef topologyDef, String refName) throws Exception {
 		BeanDef beanDef = topologyDef.getComponent(refName);

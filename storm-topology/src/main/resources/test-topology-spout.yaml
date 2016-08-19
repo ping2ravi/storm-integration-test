@@ -1,0 +1,41 @@
+name: "test-topology"
+config:
+  topology.workers: 1
+
+# spout definitions
+spouts:
+  - id: "timer-spout"
+    className: "com.next.storm.topolgy.spout.TimerSpout"
+    parallelism: 1
+    properties:
+      - name: "outputField"
+        value: "oField"
+      - name: "outputStream"
+        value: "oStream"
+      - name: "outputStream2"
+        value: "oStream2"
+
+# bolt definitions
+bolts:
+  - id: "print-bolt"
+    className: "com.next.storm.topolgy.bolt.PrintBolt"
+    parallelism: 1
+bolts:
+  - id: "print-bolt2"
+    className: "com.next.storm.topolgy.bolt.PrintBolt"
+    parallelism: 1
+
+#stream definitions
+streams:
+  - name: "timer-spout --> print-bolt"
+    from: "timer-spout"
+    to: "print-bolt"
+    grouping:
+      type: SHUFFLE
+      streamId: "oStream"
+  - name: "timer-spout --> print-bolt2"
+    from: "timer-spout"
+    to: "print-bolt2"
+    grouping:
+      type: SHUFFLE
+      streamId: "oStream2"

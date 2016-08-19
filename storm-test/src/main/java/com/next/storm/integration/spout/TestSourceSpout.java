@@ -31,7 +31,7 @@ public class TestSourceSpout implements IRichSpout {
 	public void open(Map conf, TopologyContext context, SpoutOutputCollector collector) {
 		this.collector = collector;
 		this.messageQueue = MessageQueue.getInstance();
-		StormNotifier.getInstance().sendProcessedSignal("StartTopology");
+		StormNotifier.getInstance().sendTopologyStartedSignal();
 	}
 
 	public void close() {
@@ -71,13 +71,13 @@ public class TestSourceSpout implements IRichSpout {
 
 	public void ack(Object msgId) {
 		System.out.println("Message ACK "+ msgId);
-		StormNotifier.getInstance().sendProcessedSignal(msgId.toString());
+		StormNotifier.getInstance().sendMessageProcessedSignal(msgId.toString());
 	}
 
 	public void fail(Object msgId) {
 		System.out.println("Message FAIL "+ msgId);
 
-		StormNotifier.getInstance().sendProcessedSignal(msgId.toString());		
+		StormNotifier.getInstance().sendMessageProcessedSignal(msgId.toString());
 	}
 
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {

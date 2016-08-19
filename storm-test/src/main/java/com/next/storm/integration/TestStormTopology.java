@@ -17,7 +17,7 @@ public interface TestStormTopology {
 	
 	boolean killTopology(LocalCluster localCluster) throws Exception;
 
-
+	boolean waitUntilNMessagesAreProcessed(int n, int maxSecondsToWait);
 	
 	
 }

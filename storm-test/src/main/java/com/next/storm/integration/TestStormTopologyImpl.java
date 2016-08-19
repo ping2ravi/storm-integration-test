@@ -35,9 +35,10 @@ public class TestStormTopologyImpl implements TestStormTopology {
 
     @Override
 	public boolean startTopology(LocalCluster localCluster, long timeOut, TimeUnit timeUnit) throws Exception{
-    	StormNotifier.getInstance().startNotificationFlow("StartTopology");
+		StormNotifier.getInstance().reset();
+    	StormNotifier.getInstance().startNotificationFlowForStartingTopology();
         localCluster.submitTopology(topologyName, new HashMap(), stormTopology);
-        return StormNotifier.getInstance().waitForNotification("StartTopology", timeOut, timeUnit);
+        return StormNotifier.getInstance().waitForTopologyToStart(timeOut, timeUnit);
 	}
 
     @Override
@@ -46,12 +47,12 @@ public class TestStormTopologyImpl implements TestStormTopology {
     	if(spout == null){
     		throw new RuntimeException("No Stream Found "+streamId+", Available streams are "+StringUtils.collectionToDelimitedString(spoutStreams.keySet(), ",","[","]"));
     	}
-    	StormNotifier.getInstance().startNotificationFlow(messageId);
+    	StormNotifier.getInstance().startMessageNotificationFlow(messageId);
     	Message messageWithId = new Message();
     	messageWithId.setMessage(message);
     	messageWithId.setMessageId(messageId);
     	spout.sendMessage(messageWithId);
-    	return StormNotifier.getInstance().waitForNotification(messageId, timeout, timeUnit);
+    	return StormNotifier.getInstance().waitForMessageToBeProcessed(messageId, timeout, timeUnit);
 	}
 
 	@Override
@@ -80,6 +81,11 @@ public class TestStormTopologyImpl implements TestStormTopology {
 		}catch(Exception ex){
 			return true;
 		}
+	}
+
+	@Override
+	public boolean waitUntilNMessagesAreProcessed(int n, int maxSecondsToWait) {
+		return StormNotifier.getInstance().waitUntilNMessagesAreProcessed(n, maxSecondsToWait);
 	}
 
 }
